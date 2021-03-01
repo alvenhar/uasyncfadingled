@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
+Version v0.4.1
 Micropython driver to asynchronously drive one or more fading-
 capable LED(s) at relative brightness levels adapted for (logarithmic)
 human brightness perception. Provides a number of convenience methods
@@ -27,10 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 __author__ = 'Oliver Paulick'
 __copyright__ = 'Copyright 2021, Oliver Paulick'
 __credits__ = ['Oliver Paulick',]
-__license__ = 'GPL 3'
-__version__ = '0.4.0'
+__license__ = 'GPL v3.0'
+__version__ = '0.4.1'
 __maintainer__ = 'Oliver Paulick'
-__email__ = 'alvenhar()yahoo.de'
+__email__ = 'alvenhar@yahoo.de'
 __status__ = 'Dev'
 
 
