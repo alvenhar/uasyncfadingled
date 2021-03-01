@@ -9,6 +9,10 @@ callback handler. Additionally, almost any fading sequence can be
 constructed and scheduled with simple instructions.
 
 #### Usage
+*Download the driver*  
+It's really just a single small file (after all, this is for **Micro**python),
+so you can just download it here and put it next to your own program file(s).
+
 *Initialize the driver:*
 
     from uasyncfadingled import LED
