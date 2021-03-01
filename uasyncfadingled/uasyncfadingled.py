@@ -72,18 +72,18 @@ class LED:
     this class are public to allow clients to set different defaults.
     """
     
-    # fading/transition presets
+    # public fading/transition presets
     FADE_TIME: int = 2_000 # milliseconds
     FADE_EXP: float  = 1.0 # exponent for fading transition curve
     UPDATE_INTERVAL: int = 20 # milliseconds
     
-    # async and fading flags
+    # public object data
+    current_brightness: int = 0
+    
+    # private async and fading flags
     _fading_in_progress: bool = False
     _fading_force_abort: bool = False
     _fading_force_finish: bool = False
-    
-    # object shared data for fading
-    current_brightness: int = 0
     
     def __init__(self, gpio):
         """Set up the LED to use the given <gpio> pin(s); either a single int or a list/tuple of ints."""
@@ -107,7 +107,7 @@ class LED:
         if not fading_friendly:
             self.abort_fading()
         next_pwm_duty = self._get_pwm_for_brightness(brightness)
-        self._current_brightness = brightness
+        self.current_brightness = brightness
         for pwm in self.PWM:
             pwm.duty_u16(next_pwm_duty)
     
@@ -121,7 +121,7 @@ class LED:
                 "Brightness change <{}%> out of range (-100% / +100%)!".format(percent_step))
         if percent_step == 0:
             return # no change
-        new_brightness = self.brightness + percent_step
+        new_brightness = self.current_brightness + percent_step
         if new_brightness > 100:
             new_brightness = 100
         elif new_brightness < 0:
@@ -218,7 +218,7 @@ class LED:
         # schedule the fader into the event loop
         uasyncio.create_task(self._async_sequence(heartbeat_sequence, initial_brightness=brightness_range[0]))
     
-    def start_fade_sequence(self, sequence: list, initial_brightness:int = -1, repeat:int = 0):
+    def start_sequence(self, sequence: list, initial_brightness:int = -1, repeat:int = 0):
         """
         Start a user-defined fade sequence passed as a list of tuples, each
         defining one leg of the fade sequence with target brightness, time (in
@@ -262,7 +262,7 @@ class LED:
         if fade_exp <= 0:
             raise ValueError("Fade exponent <{}> undefined!".format(fade_exp))
         # calculate dimming steps
-        initial_brightness = self._current_brightness
+        initial_brightness = self.current_brightness
         brightness_diff = target_brightness - initial_brightness
         # catch 'no-change' wait periods, either intentional or by happenstance, to save CPU time
         if no_change == True or brightness_diff == 0:

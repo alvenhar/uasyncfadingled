@@ -43,9 +43,9 @@ enough current to the LED(s) to actually light them up.
     led.start_sequence(sequence, [optional args])
     led.abort_fading()
 
-You can construct many different fading sequences with the method `start_sequence`. Usage
-is in the docstring, and you can see in the code that `start_wave` and `start_heartbeat`
-actually use this generalized method as well, so they can serve as examples.
+You can construct many different fading sequences with the method `start_sequence`.
+Usage is in the docstring, and you can see in the code that `start_wave` and
+`start_heartbeat` actually use this generalized method as well, so they can serve as examples.
 
 *What's asynchronous about this?*
 The actual commands are synchronous (and relatively cheap to execute, i.e. they can be
