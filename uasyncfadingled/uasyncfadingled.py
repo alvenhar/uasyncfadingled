@@ -149,6 +149,8 @@ class LED:
         transition curve can be set by changing <fade_exp>.
         Defaults are 100% brightness and the class's FADE_TIME and FADE_EXP.
         """
+        if not 0 <= target_brightness <= 100:
+            raise ValueError("Target brightness {} out of range (0-100)!".format(target_brightness))
         # schedule the fader into the event loop
         uasyncio.create_task(self._simple_fade(target_brightness, fade_time, fade_exp))
     
@@ -225,6 +227,8 @@ class LED:
         the current brightness (default behavior). Unless interrupted (e.g. by
         abort_fading()), the pattern will be repeated <repeat> times, or
         indefinitely if <repeat> is set to 0 or less (default behavior).
+        Target brightness for any leg can be set to a negative value to
+        indicate a simple 'no-change' wait period for the respective fade_time.
         """
         if len(sequence) == 0:
             raise ValueError("Fade sequence is empty!")
@@ -247,8 +251,12 @@ class LED:
     
     async def _async_fading(self, target_brightness: int, fade_time: int, fade_exp: float = 1.0):
         """Core fading method. Not to be called directly!"""
-        if not 0 <= target_brightness <= 100:
-            raise ValueError("Target brightness {} out of range (0-100)!".format(brightness_range))
+        if target_brightness < 0:
+            no_change = True
+        elif target_brightness > 100:
+            raise ValueError("Target brightness {} out of range (0-100)!".format(target_brightness))
+        else:
+            no_change = False
         if fade_time < self.UPDATE_INTERVAL:
             raise ValueError("Fade time <{}> too short!".format(fade_time))
         if fade_exp <= 0:
@@ -256,21 +264,23 @@ class LED:
         # calculate dimming steps
         initial_brightness = self._current_brightness
         brightness_diff = target_brightness - initial_brightness
+        # catch 'no-change' wait periods, either intentional or by happenstance, to save CPU time
+        if no_change == True or brightness_diff == 0:
+            await uasyncio.sleep_ms(fade_time)
+            return
         # start timing
         fade_start = utime.ticks_ms()
         fade_target = utime.ticks_add(fade_start, fade_time)
         # start the fading cycle
         while not self._fading_force_abort:
             now = utime.ticks_ms()
-            if utime.ticks_diff(now, fade_target) > 0: # if overdue
+            if utime.ticks_diff(now, fade_target) >= 0: # if due or overdue
                 self.set_to(target_brightness, fading_friendly=True)
                 return
             progress_fraction = utime.ticks_diff(now, fade_start) / fade_time
             fade_multiplier = progress_fraction ** fade_exp
             next_brightness = round(initial_brightness + (brightness_diff * fade_multiplier))
             self.set_to(next_brightness, fading_friendly=True)
-            if next_brightness == target_brightness:
-                return
             await uasyncio.sleep_ms(self.UPDATE_INTERVAL)
     
     async def _async_sequence(self, sequence: list, initial_brightness:int, repeat:int = 0):
