@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-A Micropython library to asynchronously drive one or more fading-
+Micropython driver to asynchronously drive one or more fading-
 capable LED(s) at relative brightness levels adapted for (logarithmic)
 human brightness perception. Provides a number of convenience methods
 for dimming and fading that can be called synchronously, e.g. in a
@@ -30,7 +30,7 @@ __credits__ = ['Oliver Paulick',]
 __license__ = 'GPL 3'
 __version__ = '0.4.0'
 __maintainer__ = 'Oliver Paulick'
-__email__ = 'oliver.paulick()posteo.de'
+__email__ = 'alvenhar()yahoo.de'
 __status__ = 'Dev'
 
 
