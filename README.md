@@ -13,34 +13,34 @@ constructed and scheduled with simple instructions.
 
     from uasyncfadingled import LED
     
-    *# create a driver on a single GPIO pin, e.g. GPIO 4:*
+    # create a driver on a single GPIO pin, e.g. GPIO 4:
     led = LED(4)
-    *# or drive several LED at different GPIO pins simultaneously,e.g. at GPIO 4,5,6:*
+    # or drive several LED at different GPIO pins simultaneously,e.g. at GPIO 4,5,6:
     led = LED([4, 5, 6])
 
-*Commands:*
+*Commands:*  
 All brightness settings operate on a scale adapted for the logarithmic
-nature of human brightness perception with values from 0 - 100%. This
-has the side-effect that very low values (<10%) might not provide
+nature of human brightness perception with values from 0-100%.
+This has the side-effect that very low values (<10%) might not provide
 enough current to the LED(s) to actually light them up.
 
-    *# self explanatory methods:*
+    # self explanatory methods:
     led.turn_on()
     led.turn_off()
     led.set_to(brightness_level)
     
-    *# convenience method for stepping the brightness up/down*
+    # convenience method for stepping the brightness up/down
     led.change_brightness(percent_step)
     
-    *# the fading methods*
+    # the fading methods
     led.fade_to(target_brightness, [optional args])
     led.start_wave(brightness_range, wave_length)
     led.start_heartbeat(brightness_range, pulse)
     led.start_sequence(sequence, [optional args])
     led.abort_fading()
 
-You can construct many different fading sequences with the method start_sequence. Usage
-is in the docstring, and you can see in the code that start_wave and start_heartbeat
+You can construct many different fading sequences with the method `start_sequence`. Usage
+is in the docstring, and you can see in the code that `start_wave` and `start_heartbeat`
 actually use this generalized method as well, so they can serve as examples.
 
 *What's asynchronous about this?*
@@ -63,12 +63,12 @@ they require a started event loop into which the asynchronous updates can be sch
 
     async def main():
       '''Asynchronous co-routine in your code'''
-      *# e.g. watching for GPIO 22 to change to high*
+      # e.g. watching for GPIO 22 to change to high
       Pin(22).irq(trigger=Pin.IRQ_RISING, handler=led_heartbeat_pattern)
       while True:
         await uasyncio.sleep_ms(10)
 
-    *# provide the event loop, e.g.:*
+    # provide the event loop, e.g.:
     uasyncio.run(main())
 
 Have fun!
