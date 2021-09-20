@@ -78,14 +78,6 @@ class LED:
     FADE_EXP: float  = 1.0 # exponent for fading transition curve
     UPDATE_INTERVAL: int = 20 # milliseconds
     
-    # public object data
-    current_brightness: int = 0
-    
-    # private async and fading flags
-    _fading_in_progress: bool = False
-    _fading_force_abort: bool = False
-    _fading_force_finish: bool = False
-    
     def __init__(self, gpio):
         """Set up the LED to use the given <gpio> pin(s); either a single int or a list/tuple of ints."""
         if type(gpio) == type(int()):
@@ -97,6 +89,12 @@ class LED:
         for pwm in self.PWM:
             pwm.freq(_PWM_FREQ)
             pwm.duty_u16(_PWM_OFF)
+        # public object data
+        self.current_brightness: int = 0
+        # private async and fading flags
+        self._fading_in_progress: bool = False
+        self._fading_force_abort: bool = False
+        self._fading_force_finish: bool = False
     
     ### PUBLIC METHOD DEFINITIONS ###
     
